@@ -1,0 +1,156 @@
+Can anyone see the lobby / game in progress?
+Should there be a password recovery mechanism? If so, how? Email would mean that we have to get emails from everyone. Letting the teacher view all the passwords isn't great either.
+    I suspect the best option is to allow the teacher to reset a password
+
+
+Possible teacher actions:
+    Create new question set
+    Alter question set
+    Start a game
+    Alter someone's points
+    Reset someone's password
+    Delete user
+    Reset the points for a new game
+
+Potential 'user' view:
+    View past scores?
+    Change password
+    Change avatar
+
+Need:
+    
+
+Database should consist of:
+    Users
+Name, Image, Password, Points, Permissions
+
+    Questions
+Question, Answer, Set
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        For Index page:
+Log in:
+Requires username,
+         Password
+On success: 
+    Returns a cookie to the user, used to track session
+On Failure:
+    Returns user to index page
+
+New User:
+Requires username
+         Password
+Returns a cookie to the user, used to track session
+Failure conditions:
+    No username
+    No password
+Failure: Returns user to index page
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+            For Lobby page
+Requires:
+    login to view
+    cookie must not be set to "game:yes" or whatever we use
+    web sockets for each person
+    Database requests to get:
+        current leaderboard
+        User permissions / points
+Actions:
+    Admin starts game
+        Server gives another cookie (or updates existing one) to allow access to game.html
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Game page
+Requires:
+    Logged in
+    Game started
+    cookie must be set to "game:yes" or whatever we use
+
+On startup:
+    Server creates game cards for each user (including teacher?)
+
+Actions:
+    Bingo (button):
+        Automatic verificaton.
+        Only enabled when they have a bingo (but doesn't tell them they have one)
+        On press, alerts all users with alert()
+    Answer selection:
+        Verifies against current question
+        Changes color of bingo field
+        If correct:
+            Calls bingo verification function
+            Updates correct answers for this user only
+            Updates color permanently
+        If wrong:
+            Color goes back to normal at end of question
+    Question times out:
+        Updates correct answers for all users
+        Question is changed
+        Colors of incorrect answers are reset
+    Game ends:
+        Alert window for all users, when they click OK, return to lobby
+        Reset the cookie value that puts in 'game'
+        Update points in database
+    Button to abort game:
+        Only teacher can press
+        calls Game End (maybe with custom alert?)
+    Button to pause game:
+        Only teacher can press
+        Halts the countdown on the server
+        Display time left as "Pause"
+        Ideally hide bingo fields and question field
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        User panel page
+Requires:
+    Logged in
+Actions:
+    Update password:
+    Change avatar
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Admin panel page
+Requires:
+    Logged in
+    Admin permissions
+Actions:
+    Update password
+    Change avatar
+    Edit question set:
+        Takes you to the edit question set page
+    Create new question set:
+        Calls a text parser, which parses, then adds to database
+    Reset a user's password:
+        (set it to 123 or something)
+    Delete user:
+        Can't delete admins, can only delete student users
+    Alter points:
+        Changes a user's points 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+        Question Set update
+Requires:
+    Logged in
+    Admin permissions
+On startup:
+    Display current question set
+Actions:
+    Update question/answer
+    Delete question from set
+    Add new questions to set (calls text parser)
+    Rename set
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    What functions do we need server-side?
+Login
+Logout (or just close the window)
