@@ -75,7 +75,7 @@ On startup:
 
 Actions:
     Bingo (button):
-        Automatic verificaton.
+        Automatic verification.
         Only enabled when they have a bingo (but doesn't tell them they have one)
         On press, alerts all users with alert()
     Answer selection:
