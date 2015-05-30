@@ -1,31 +1,39 @@
 <html>
   <head>
     <title>Regular user page</title>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+    <link href="../stylesheets/userstyle.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <header>
+    <div id='titleBar'>
       <a href="index.html">Index</a>
       <a href="lobby.html">Lobby</a>
       <a href="game.html">Game</a>
       <a href="user-panel.html">User panel</a>
       <a href="admin-panel.html">Admin panel</a>
       <a href="question-sets.html">Question Sets</a>
-    <hr>
-    </header>
-    <h1>Username</h1>
-    Past scores...<br>
-    <br>
-    <br>
-    <b>Change password: </b><br>
-    Old password:<br>
-    <input type="password"><br>
-    New password:<br>
-    <input type="password">
-    <button>Update</button>
+    </div>
 
-    <br>
-    <br>
-    <br>
-    Change avatar<br>
+    <div id='pastscores'>
+      <!--get username from login stuff-->
+      <h1>Username</h1>
+      <!--Pull past scores from the database-->
+      Past scores...<br>
+    </div>
+
+    <div id='changepassword'>
+      <!--coordinate with login stuff-->
+      <b>Change password: </b><br>
+      Old password:<br>
+      <input type="password"><br>
+      New password:<br>
+      <input type="password">
+      <button>Update</button>
+    </div>
+
+    <div id='avatar'>
+      <!--this can be added later -->
+      Change avatar<br>
+    </div>
   </body>
 </html>

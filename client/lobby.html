@@ -1,41 +1,47 @@
 <html>
   <head>
     <title>Lobby</title>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+    <link href="../stylesheets/lobbystyle.css" rel="stylesheet" type="text/css">
   </head>
   <body>
-    <header>
+    <div id='titleBar'>
       <a href="index.html">Index</a>
       <a href="lobby.html">Lobby</a>
       <a href="game.html">Game</a>
       <a href="user-panel.html">User panel</a>
       <a href="admin-panel.html">Admin panel</a>
       <a href="question-sets.html">Question Sets</a>
-      <hr>
-    </header>
-    <h1>List of current points</h1>
-    1. Alice, 10 points<br>
-    2. Bob, 9 points<br>
-    3. Carol, 7 points<br>
-    4. Dave, 4 points<br>
-    5. Eve, 2 points<br>
+    </div>
 
-    <br>
-    <br>
-    <h1>Currently signed in</h1>
-    Alice<br>
-    Carol<br>
-    Dave<br>
-    <br>
-    <hr>
-    <h1>Extras in teacher view:</h1>
-    <button>Button to start the game</button><br>
-    Dropdown menu to select a question set<br>
-    <select>
-      <option>Geography</option>
-      <option>Math</option>
-      <option>History</option>
-    </select>
-    <br>Maybe a link to an admin panel</br>
-    Selection of time options
+    <div id='scoreboard'>
+      <h1>List of current points</h1>
+      1. Alice, 10 points<br>
+      2. Bob, 9 points<br>
+      3. Carol, 7 points<br>
+      4. Dave, 4 points<br>
+      5. Eve, 2 points<br>
+    </div>
+
+    <div id='userslogged in'>
+      <h1>Currently signed in</h1>
+      Alice<br>
+      Carol<br>
+      Dave<br>
+    </div>
+    
+    <div id='teacherView'>
+      <h1>Extras in teacher view:</h1>
+      <button>Button to start the game</button><br>
+      Dropdown menu to select a question set<br>
+      <select>
+        <option>Geography</option>
+        <option>Math</option>
+        <option>History</option>
+      </select>
+      <br>Maybe a link to an admin panel</br>
+      Selection of time options
+    </div>
+
   </body>
 </html>

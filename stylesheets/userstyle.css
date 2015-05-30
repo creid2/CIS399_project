@@ -1,0 +1,19 @@
+#pastscores {
+	position: absolute;
+	left: 100px;
+	width: 200px;
+	top:100px;
+}
+
+#changepassword {
+	position: absolute;
+	left:700px;
+	width: 100px;
+	top:150px;
+}
+
+#avatar {
+	position: absolute;
+	left:100px;
+	top:500px;
+}
