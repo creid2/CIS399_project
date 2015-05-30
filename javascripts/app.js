@@ -1,4 +1,5 @@
 var main = function () {
+
     var count = 60;
     var counter;
     var timer = function() {  
@@ -9,11 +10,15 @@ var main = function () {
         }
         $('#time').html(count + ' secs');
     };
-
+    
     $('#startTimer').on('click', function(event) {
         var counter = setInterval(timer, 1000);
         //timer();
     });
+ 
+    var checkBingo = function() {
+        
+    };
 
     $("#board table tr td").toArray().forEach(function (element) {
         var $element = $(element);
@@ -25,6 +30,7 @@ var main = function () {
             console.log('clicked element');
             if($element.attr('class') !== 'active') {
                 $element.addClass('active');
+                checkBingo();
                 console.log($element);
             } else {
                 return;

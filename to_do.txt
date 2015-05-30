@@ -1,0 +1,34 @@
+pull from db and user info to:
+	load in questions and answers
+	get names and scores from the users and show in lobby
+
+start game
+	timer loop until bingo
+
+Bingo Verification - sockets
+
+Login
+	show teacherView based on user type
+	based in user type, show user profile or teacher profile
+	teacher: 
+		reset user passwords
+		delete users
+
+Game
+	show question and start timer at same time
+	stop time when user clicks on board
+	on each answer, verify and accept or deny - show on board
+	on each answer, check bingo - if bingo, activate bingo button
+	when bingo, end game for all users and announce winner
+
+TeacherView
+	add quit game - end game for all users
+	pause game - stop time for all users
+	start game
+
+Question Sets - db
+	add new question set
+	add new question and answer pair to db
+	get answer pairs, show in page, allow edit and delete
+	delete question set
+

@@ -1,19 +1,17 @@
 #pastscores {
-	position: absolute;
-	left: 100px;
-	width: 200px;
-	top:100px;
+	border:2px solid;
+	width: 400px;
+	height:400px;
+	float:left;
 }
 
 #changepassword {
-	position: absolute;
-	left:700px;
-	width: 100px;
-	top:150px;
+	border:2px solid;
+	width: 250px;
+	height:150px;
+	float: right;	
 }
 
-#avatar {
-	position: absolute;
-	left:100px;
-	top:500px;
+#container {
+	width: 800px;
 }
