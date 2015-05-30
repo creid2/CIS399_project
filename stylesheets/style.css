@@ -1,6 +1,12 @@
-table, td, tr {
+table {
+	width:700px;
+	height: 500px;
+}
+
+td, tr {
 	border:1px solid;
 	padding: 25px;
+
 }
 
 #titleBar{
@@ -10,31 +16,39 @@ table, td, tr {
 	width:99%;
 	padding:5px;
 	margin: 0;
-	background-color: gray;
-	color: white;
-	padding-right: 10px;
+	background-color: #666666;
+	min-width: 1000px;
 }
 
-#leaderboard {
-	border: 2px solid;
-	width:300px;
-	position: absolute;
-	left: 850px;
-	top:100px;
+a {
+	color: #CCCCCC;
+	text-decoration: none;
+}
+
+a:hover {
+	color: #FFFFFF;
+}
+
+#container {
+	width: 1000px;
+	height: 550px;
+	margin-top: 30px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#panel {
+	width:250px;
+	height:200px;
+	float: left;
 }
 
 #board {
 	border: 3px solid;
-	width: 700px;
-	position: absolute;
-	left: 50px;
-	top: 100px;
+	width:700px;
+	float: right;
 }
 
-#teacherView {
-	position: absolute;
-	left: 850px;
-	top: 400px;
-	width:300p
+.active {
+	background-color: black;
 }
-

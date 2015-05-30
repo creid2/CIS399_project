@@ -1,0 +1,77 @@
+<html>
+  <head>
+    <title>Game</title>
+    <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
+  </head>
+  <body>
+    <!-- on hover, show a menu of options -->
+    <div id='titleBar'>
+      <a href='#'>User Profile</a>
+      <a href='#'>Other Option</a>         
+    </div>
+    
+    <div id='container'>
+
+      <div id='panel'>
+        <h3>Question:</h3> 
+
+        <!-- need random question generator -->
+        <p id='question'>What is the capital of Oregon?<br> </p>
+        <br><br>
+        <!-- need decrementer timer -->
+        <p id='timer'><b>Time left: </b><span id='time'> </span></p>
+
+        <!-- need js function to show and hide depending on user -->
+        <div id='teacherOptions'>
+          <h3>Extras in teacher view:</h3>
+          <button>Abort the game</button><br>
+          <button id='startTimer'>Start</button><br>
+        </div> 
+
+      </div>
+
+      <div id='board'>
+        <table>
+          <tr class='row-0'>
+            <td class='cell-0'></td>
+            <td class='cell-1'></td>
+            <td class='cell-2'></td>
+            <td class='cell-3'></td>
+            <td class='cell-4'></td>
+          </tr>
+          <tr class='row-1'>
+            <td class='cell-0'></td>
+            <td class='cell-1'></td>
+            <td class='cell-2'></td>
+            <td class='cell-3'></td>
+            <td class='cell-4'></td>
+          </tr>
+          <tr class='row-2'>
+            <td class='cell-0'></td>
+            <td class='cell-1'></td>
+            <td class='cell-2'></td>
+            <td class='cell-3'></td>
+            <td class='cell-4'></td>
+          </tr>
+          <tr class='row-3'>
+            <td class='cell-0'></td>
+            <td class='cell-1'></td>
+            <td class='cell-2'></td>
+            <td class='cell-3'></td>
+            <td class='cell-4'></td>
+          </tr>
+          <tr class='row-4'>
+            <td class='cell-0'></td>
+            <td class='cell-1'></td>
+            <td class='cell-2'></td>
+            <td class='cell-3'></td>
+            <td class='cell-4'></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src='../javascripts/app.js'></script>
+  </body>
+</html>
