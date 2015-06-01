@@ -73,6 +73,14 @@
     </div>
 
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
-    <script type="text/javascript" src='../javascripts/app.js'></script>
+     <script>
+    var socket = io();
+    
+    socket.on('id', function(id){
+			if(!$('#titleBar').text()){
+				$('#titleBar').text(id);
+			};
+		});
+    </script>
   </body>
 </html>
