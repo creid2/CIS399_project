@@ -4,6 +4,15 @@
     <link href="../stylesheets/style.css" rel="stylesheet" type="text/css">
     <link href="../stylesheets/loginstyle.css" rel="stylesheet" type="text/css">
   </head>
+   <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>          
+   <script type="text/javascript">
+     console.log('script loading');
+      $(document).click(function(){                     // added my matti to bypass the login... this skips to the game page
+            console.log("button clicked");
+            window.location = './game.html'
+      });
+ 
+   </script>
   <body>
     <!--need to design this better-->
     <div id='logincontainer'>
@@ -13,7 +22,7 @@
         <input type="text"><br>
         Password: <br>
         <input type="password"> <br>
-        <button>Log in</button>
+        <button id='loginButton'>Log in</button>
       </div>
 
       <div id='registerBox'>
@@ -25,5 +34,7 @@
         <button>Register</button>
       </div>
     </div>
+
+
   </body>
 </html>

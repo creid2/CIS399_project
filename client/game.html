@@ -10,6 +10,9 @@
       <a href='user-panel.html'>Username</a>
       <a href='#'></a>         
     </div>
+
+    <!-- div socketNum added for testing -matti-->
+    <div id='socketNum'></div>            
     
     <div id='container'>
 
@@ -34,25 +37,26 @@
       <div id='board'>
         <table>
           <tr class='row-0'>
-            <td class='cell-0'></td>
-            <td class='cell-1'></td>
-            <td class='cell-2'></td>
-            <td class='cell-3'></td>
-            <td class='cell-4'></td>
+   <!-- I added letter to see the table - matti -->
+            <td class='cell-0'> a</td>          
+            <td class='cell-1'>b</td>          
+            <td class='cell-2'>c</td>           
+            <td class='cell-3'>d</td>          
+            <td class='cell-4'>e</td>
           </tr>
           <tr class='row-1'>
-            <td class='cell-0'></td>
-            <td class='cell-1'></td>
-            <td class='cell-2'></td>
-            <td class='cell-3'></td>
-            <td class='cell-4'></td>
+            <td class='cell-0'>f</td>
+            <td class='cell-1'>g</td>
+            <td class='cell-2'>h</td>
+            <td class='cell-3'>i</td>
+            <td class='cell-4'>j</td>
           </tr>
           <tr class='row-2'>
-            <td class='cell-0'></td>
-            <td class='cell-1'></td>
-            <td class='cell-2'></td>
-            <td class='cell-3'></td>
-            <td class='cell-4'></td>
+            <td class='cell-0'>k</td>
+            <td class='cell-1'>l</td>
+            <td class='cell-2'>m</td>
+            <td class='cell-3'>n</td>
+            <td class='cell-4'>o</td>
           </tr>
           <tr class='row-3'>
             <td class='cell-0'></td>
@@ -73,14 +77,22 @@
     </div>
 
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
+    
+
      <script>
     var socket = io();
     
     socket.on('id', function(id){
-			if(!$('#titleBar').text()){
-				$('#titleBar').text(id);
+			if(!$('#socketNum').text()){
+				$('#socketNum').text(id);
 			};
 		});
+
+     $('td').click(function(){                
+            console.log(" clicked");
+      });
+
     </script>
   </body>
 </html>
