@@ -82,17 +82,37 @@
 
      <script>
      
-    var socket = io();
-    
-    socket.on('id', function(id){
-			if(!$('#socketNum').text()){
-				$('#socketNum').text(id);
-			};
-		});
+     var socket = io();
+     
+     socket.on('id', function(id){
+         if(!$('#socketNum').text()){
+             $('#socketNum').text(id);
+         };
+
+       // When the server sends a randomized list of questions and answers, put
+       // them into the gameboard:
+       socket.on('randomBoard', function(msg) {
+           // After receiving the data from the server, put it into the gameboard
+           for (var i = 0; i < 5; i++) {
+               for (var j = 0; j < 5; j++) {
+                   $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
+               }
+           }
+       });
+	   });
+
+     socket.on('newQuestion', function(quest) {
+       console.log(quest);
+       $('#question').text(quest);
+     });
+
 
      $('td').click(function(){                
-            console.log(" clicked");
-      });
+          console.log(" clicked");
+     });
+
+
+    // Would like to have a method to auto-disconnect, but Chrome makes that harder
 
     </script>
   </body>
