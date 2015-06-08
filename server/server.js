@@ -138,11 +138,12 @@ function getAnswerGrid(qSet, socket) {
 }
 
 function initGame(qSet) {
-    Question.find({'q_set':qSet}, 'question', function(err, res) {
+    Question.find({'q_set':qSet}, 'question answer', function(err, res) {
         if (err) {
             console.log("Error in initGame:", err);
             questionsLeft.push("Error getting a question");
         } else {
+            // Randomly shuffle the array
             for(var j, x, i = res.length; i; j = parseInt(Math.random() * i), x = res[--i], res[i] = res[j], res[j] = x);
             questionsLeft = res;
             nextQuestion();
@@ -151,12 +152,16 @@ function initGame(qSet) {
 }
 
 function nextQuestion() {
-    //console.log("looking at global variable questionsLeft", questionsLeft);
     questionsLeft.pop();
-    //broadcastQuestion();
+
+    // If there are remaining questions, serve up the next one
     if (questionsLeft.length > 0) {
-        io.emit("newQuestion", questionsLeft[questionsLeft.length - 1].question);
-        setInterval(function(){nextQuestion()}, 7000);
+        io.emit("newQuestion", questionsLeft[questionsLeft.length - 1]);
+        setTimeout(function(){nextQuestion()}, 7000);
+    } else {
+        // If we've run out of questions, start again
+        console.log("Out of questions");
+        initGame('addition'); 
     }
 }
 

@@ -81,8 +81,10 @@
     
 
      <script>
-     
-     var socket = io();
+       var prevClicked = [ ];
+       var clicked = false;
+       var prevAnswer;
+       var socket = io();
      
      socket.on('id', function(id){
          if(!$('#socketNum').text()){
@@ -101,16 +103,58 @@
        });
 	   });
 
-     socket.on('newQuestion', function(quest) {
-       console.log(quest);
-       $('#question').text(quest);
+     socket.on('newQuestion', function(msg) {
+       clicked = false;
+
+       // Check things
+       console.log("prevClicked is:", prevClicked);
+       console.log("prevAnswer is:", prevAnswer);
+
+       // Evaulate old question
+       if (prevClicked.length > 0) {
+         var temp = $('.row-' + prevClicked[0] + ' > .cell-' + prevClicked[1]);
+         console.log("Printing temp.text:", temp.text());
+         if (temp.text() === prevAnswer) {
+           temp.css("background-color", "green");
+           } else {
+             temp.css("background-color", "white");
+           }
+       }
+       // Reset prevClicked
+       prevClicked = [ ];
+
+       // Receive the new question from the server
+       console.log(msg.answer);
+       prevAnswer = msg.answer;
+       console.log(msg);
+       $('#question').text(msg.question);
      });
 
 
      $('td').click(function(){                
-          console.log(" clicked");
+        console.log(" clicked");
+        if (!clicked) {
+          clicked = true;
+          var el = $(this);
+          var cellNum = el.attr('class').split('-')[1];
+          var rowNum = el.parent().attr('class').split('-')[1];
+          
+          // Highlight the clicked box
+          $('.row-' + rowNum + ' > .cell-' + cellNum).css("background-color", "yellow");
+
+          // Update the global variable
+          prevClicked = [rowNum, cellNum];
+          //onClick(rowNum, cellNum);
+
+          // Debugging
+          console.log(prevClicked);
+      }
      });
 
+     function onClick(i, j) {
+          prevClicked = $('.row-' + i + ' > .cell-' + j);
+          console.log(prevClicked);
+     }
 
     // Would like to have a method to auto-disconnect, but Chrome makes that harder
 
