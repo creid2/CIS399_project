@@ -24,3 +24,8 @@ td, tr {
 .active {
 	background-color: black;
 }
+
+#leaderBoard{
+	height: 25px;
+
+}

@@ -33,11 +33,28 @@
         </div> 
 
       </div>
+      <div id='leaderDiv'>
+        <table id='leaderBoard' >
+         <tr class='lbRow-id' >
+            <td class='player1'>PLAYER 1</td>          
+            <td class='player2'>PLAYER 2</td>          
+            <td class='player3'>PLAYER 3</td>           
+            <td class='player4'>PLAYER 4</td> 
+            <td class='player5'>PLAYER 5</td>         
+          </tr>
+           <tr class='lbRow-1' >
+            <td class='lbCell-1'></td>          
+            <td class='lbCell-2'></td>          
+            <td class='lbCell-3'></td>           
+            <td class='lbCell-4'></td> 
+            <td class='lbCell-5'></td>         
+          </tr>
+        </table>
 
+      </div>
       <div id='board'>
         <table>
           <tr class='row-0'>
-   <!-- I added letter to see the table - matti -->
             <td class='cell-0'></td>          
             <td class='cell-1'></td>          
             <td class='cell-2'></td>           
@@ -85,8 +102,12 @@
        var clicked = false;
        var prevAnswer;
        var socket = io();
+       var idNum=0;
+       var numCorrect=0;
      
-     socket.on('id', function(id){
+    socket.on('id', function(id){
+          if (idNum==0){ idNum = id};
+
          if(!$('#socketNum').text()){
              $('#socketNum').text(id);
          };
@@ -101,21 +122,25 @@
                }
            }
        });
+
 	   });
 
+ 
      socket.on('newQuestion', function(msg) {
        clicked = false;
 
        // Check things
-       console.log("prevClicked is:", prevClicked);
-       console.log("prevAnswer is:", prevAnswer);
+       // console.log("prevClicked is:", prevClicked);
+       // console.log("prevAnswer is:", prevAnswer);
 
        // Evaulate old question
        if (prevClicked.length > 0) {
          var temp = $('.row-' + prevClicked[0] + ' > .cell-' + prevClicked[1]);
-         console.log("Printing temp.text:", temp.text());
+         // console.log("Printing temp.text:", temp.text());
          if (temp.text() === prevAnswer) {
            temp.css("background-color", "green");
+           numCorrect+=1;
+           socket.emit('idUpdate', idNum +':'+numCorrect);
            } else {
              temp.css("background-color", "white");
            }
@@ -124,15 +149,32 @@
        prevClicked = [ ];
 
        // Receive the new question from the server
-       console.log(msg.answer);
+       // console.log(msg.answer);
        prevAnswer = msg.answer;
-       console.log(msg);
+       // console.log(msg);
        $('#question').text(msg.question);
      });
 
+    
+
+    
+     socket.on('idUpdate' , function(msg){
+        console.log("updating Id");
+        var id = msg.split(':')[0];
+        var correct= msg.split(':')[1];
+        console.log('ID #: '+id);
+        var temp=$('.lbCell-'+id);
+        temp.text(correct);
+      });
+      
+     
+        
 
      $('td').click(function(){                
-        console.log(" clicked");
+       // console.log(" clicked");
+       // console.log("id: " +idNum);
+       // console.log("correct: " + numCorrect);
+
         if (!clicked) {
           clicked = true;
           var el = $(this);

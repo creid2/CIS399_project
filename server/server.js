@@ -6,10 +6,14 @@ var mongoose = require('mongoose'); // May need to change this
 
 var questionsLeft = []; // Keeps track of questions in the set
 
-var connectedClients = [];  // think about if this is needed
+var connectedClients = []; 
+ playerNum =1;
+
 
 io.on('connection', function(socket){									
-    io.emit('id', socket.id);
+    //io.emit('id', socket.id);
+    io.emit('id', playerNum);
+    playerNum+=1;
     connectedClients.push(socket.id);
     console.log('client connected with socket id', socket.id);
 
@@ -17,6 +21,11 @@ io.on('connection', function(socket){
     // Not sure why this doesn't work.
     getAnswerGrid('addition', socket.id);
     //broadcastQuestion();
+    socket.on('idUpdate',function(msg){
+        console.log('idUpdate recieved from player '+ msg.split(':')[0]);
+        io.emit('idUpdate', msg);
+    });
+
 });
 
 // Doesn't seem to work, but probably not a priority to figure out why.
@@ -26,9 +35,11 @@ io.on('disconnect', function(socket){
     connectedClients.splice(i, 1); // remove the specified socket id
 });
 
+
+
 app.use(express.static(__dirname+"/../client/"));
 
-http.listen(3000,function(){
+http.listen(3002,function(){
     console.log('listening!');
 });
 
@@ -138,6 +149,7 @@ function getAnswerGrid(qSet, socket) {
 }
 
 function initGame(qSet) {
+    console.log("new Game");
     Question.find({'q_set':qSet}, 'question answer', function(err, res) {
         if (err) {
             console.log("Error in initGame:", err);
@@ -162,6 +174,7 @@ function nextQuestion() {
         // If we've run out of questions, start again
         console.log("Out of questions");
         initGame('addition'); 
+
     }
 }
 
