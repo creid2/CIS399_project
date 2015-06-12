@@ -6,10 +6,7 @@
   </head>
   <body>
     <!-- on hover, show a menu of options -->
-    <div id='titleBar'>
-      <a href='user-panel.html'>Username</a>
-      <a href='#'></a>         
-    </div>
+    <div id='titleBar'></div>
 
     <!-- div socketNum added for testing -matti-->
     <div id='socketNum'></div>            
@@ -104,13 +101,31 @@
        var socket = io();
        var idNum=0;
        var numCorrect=0;
+
+    function readCookie() {
+      console.log('reading cookie');
+      var name = "username" + "=";
+      var ca = document.cookie.split(';');
+      console.log(ca);
+      for(var i=0; i<ca.length; i++) {
+        var c = ca[i];
+      };  
+        
+      $('#titleBar').text(c.split('=')[1]);
+        
+      // while (c.charAt(0)==' ') c = c.substring(1);
+      // if (c.indexOf(name) == 0) {
+      //   console.log( c.substring(name.length,c.length));
+      // }
+    };
+
      
     socket.on('id', function(id){
-          if (idNum==0){ idNum = id};
 
-         if(!$('#socketNum').text()){
-             $('#socketNum').text(id);
-         };
+        if(!$('#titleBar').text()){
+          readCookie();
+        };
+        
 
        // When the server sends a randomized list of questions and answers, put
        // them into the gameboard:
@@ -124,6 +139,18 @@
        });
 
 	   });
+
+
+    socket.emit('inGame',idNum);
+
+    socket.on('inGame',function(msg){
+        if (idNum==0){ 
+          idNum = msg;
+        };
+        if(!$('#socketNum').text()){
+          $('#socketNum').text(idNum);
+        };
+    });
 
  
      socket.on('newQuestion', function(msg) {
@@ -140,7 +167,8 @@
          if (temp.text() === prevAnswer) {
            temp.css("background-color", "green");
            numCorrect+=1;
-           socket.emit('idUpdate', idNum +':'+numCorrect);
+        
+           socket.emit('idUpdate', idNum +':'+numCorrect+ ':'+ $('#titleBar').text());
            } else {
              temp.css("background-color", "white");
            }
@@ -162,9 +190,12 @@
         console.log("updating Id");
         var id = msg.split(':')[0];
         var correct= msg.split(':')[1];
+        var username = msg.split(':')[2];
         console.log('ID #: '+id);
         var temp=$('.lbCell-'+id);
         temp.text(correct);
+        var temp=$('.player'+id);
+        temp.text(username);
       });
       
      

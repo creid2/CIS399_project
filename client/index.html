@@ -5,36 +5,39 @@
     <link href="../stylesheets/loginstyle.css" rel="stylesheet" type="text/css">
   </head>
    <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>          
-   <script type="text/javascript">
-     console.log('script loading');
-      $(document).click(function(){                     // added my matti to bypass the login... this skips to the game page
-            console.log("button clicked");
-            window.location = './game.html'
-      });
- 
-   </script>
+  
+  
   <body>
     <!--need to design this better-->
     <div id='logincontainer'>
       <div id='loginBox'>
         <h1>Login</h1>
         Username:<br>
-        <input type="text"><br>
-        Password: <br>
-        <input type="password"> <br>
+        <input type="text" id="username"><br>
         <button id='loginButton'>Log in</button>
-      </div>
-
-      <div id='registerBox'>
-        <h1>New User</h1>
-        Username:<br>
-        <input type="text"><br>
-        Password: <br>
-        <input type="password"> <br>
-        <button>Register</button>
       </div>
     </div>
 
+   <script >
+      console.log('script loading');
+      $('#loginButton').click(function(){  
+        console.log("button clicked");
+            if($('#username').val()){
+                window.location = './game.html'
+                createCookie(username, $('#username').val());
+            };
+      });
+
+  function createCookie(name,value) {
+    console.log("creating Cookie");
+    var date = new Date();
+    date.setTime(date.getTime()+(1*24*60*60*1000));
+    var expires = "; expires="+date.toGMTString();
+    console.log("name: " + name);
+    document.cookie = name+"="+value+expires+"; path=/";
+  };
+ 
+   </script>
 
   </body>
 </html>

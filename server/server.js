@@ -12,8 +12,7 @@ var connectedClients = [];
 
 io.on('connection', function(socket){									
     //io.emit('id', socket.id);
-    io.emit('id', playerNum);
-    playerNum+=1;
+    io.emit('id');
     connectedClients.push(socket.id);
     console.log('client connected with socket id', socket.id);
 
@@ -22,8 +21,19 @@ io.on('connection', function(socket){
     getAnswerGrid('addition', socket.id);
     //broadcastQuestion();
     socket.on('idUpdate',function(msg){
+
         console.log('idUpdate recieved from player '+ msg.split(':')[0]);
         io.emit('idUpdate', msg);
+    });
+
+    socket.on('inGame',function(idNum){
+        if (idNum==0){
+            io.emit("inGame", playerNum);
+            playerNum+=1;
+            if(playerNum>5){
+                playerNum =1;
+            };
+        };
     });
 
 });
