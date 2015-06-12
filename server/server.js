@@ -38,6 +38,9 @@ io.on('connection', function(socket){
         if (idNum==0){
             io.emit("inGame", playerNum);
             playerNum+=1;
+            if (playerNum > 5){
+                playerNum=1;
+            }
         };
     });
 
