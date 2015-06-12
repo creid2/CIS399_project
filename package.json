@@ -1,7 +1,7 @@
 {
   "name": "bingo",
-  "version": "0.0.0",
-  "description": "",
+  "version": "0.0.1",
+  "description": "A game of Bingo, with addition questions",
   "main": "javascripts/app.js",
   "repository":{
 	"type": "git",
@@ -14,6 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^3.20.3",
+    "nedb": "^1.1.2",
     "socket.io": "^1.3.5"
   }
 }
