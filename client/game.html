@@ -49,6 +49,13 @@
             <td class='lbCell-4'></td> 
             <td class='lbCell-5'></td>         
           </tr>
+          <tr class='lbRow-2' >
+            <td class='wins1'>0</td>          
+            <td class='wins2'>0</td>          
+            <td class='wins3'>0</td>           
+            <td class='wins4'>0</td> 
+            <td class='wins5'>0</td>         
+          </tr>
         </table>
 
       </div>
@@ -160,6 +167,7 @@
         if(!$('#socketNum').text()){
           $('#socketNum').text(idNum);
         };
+        $('.player'+idNum) .text($('#titleBar').text());
     });
 
       socket.on('userWon', function(msg) {
@@ -289,11 +297,10 @@
          * the winner some number of extra points here.
          */
         console.log("sendVictory called.");
-
+        numTotalWins += 1;
         socket.emit('claimVictory', idNum +':'+numCorrect + ':'+ $('#titleBar').text()+ ':'+ numTotalWins);       //matti
 
-        numTotalWins += 1;                                                                                        //matti
-        numCorrect+= 0;                                                                                           //matti
+
       }
 
       function receivedVictory(msg) {
@@ -306,10 +313,15 @@
             window.alert('YOU WON !!!!');
             numTotalWins +=1;
             console.log("my total wins: " + numTotalWins);
+            
         }else{
         window.alert(msg.split(':')[2] + " won the game, with "+ msg.split(':')[1]+" points!");
         };
-
+        var id = msg.split(':')[0];
+        var temp=$('.wins'+id);
+        console.log("numwins: "+msg.split(':')[3]);
+        temp.text(msg.split(':')[3]);
+        numCorrect = 0;
         
         var resetInfo = { }; // in case we want to emit information here
         socket.emit('reset', resetInfo);
