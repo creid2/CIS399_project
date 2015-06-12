@@ -6,7 +6,7 @@ var mongoose = require('mongoose'); // May need to change this
 
 // Regular global variables:
 var questionsLeft = []; // Keeps track of questions in the set
-var STATE = 'paused';
+var STATE = 'paused';   // Not actually used
 var QUESTION_TIME = 5000; // Delay in milliseconds between questions
 var MAX_PLAYERS = 5;      // Number of players for each game
 
@@ -75,6 +75,11 @@ io.on('connection', function(socket){
     socket.join(bingoGames[bingoGames.length]);
     */
         
+    socket.on("reset", function(msg) {
+        // No message is currently being passed, but might want to have one
+        // someday
+        getAnswerGrid('addition', socket.id);
+    });
 });
 
 
@@ -225,11 +230,7 @@ function resetGame(qSet) {
      */
     console.log("Resetting game");
     STATE = 'paused';
-    initGame(qSet); // Reset the questions
-    //randomBoard(
-    // Now serve a new gameboard to all of the connected clients:
-    //for (var i = 0; i < numConnected; i++) {
-        // client[i].id.emit(new game);
-    //}
+    questionsLeft = [];  // Reset questions left
+    initGame(qSet);      // Fill out the question set again
 }
 

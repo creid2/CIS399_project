@@ -142,6 +142,7 @@
            // After receiving the data from the server, put it into the gameboard
            for (var i = 0; i < 5; i++) {
                for (var j = 0; j < 5; j++) {
+                   $('.row-' + i + ' > .cell-' + j).css("background-color", "white");
                    $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
                }
            }
@@ -308,6 +309,10 @@
         }else{
         window.alert(msg.split(':')[2] + " won the game, with "+ msg.split(':')[1]+" points!");
         };
+
+        
+        var resetInfo = { }; // in case we want to emit information here
+        socket.emit('reset', resetInfo);
       }
 
       // Would like to have a method to auto-disconnect on tab/window closing,
