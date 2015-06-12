@@ -13,7 +13,7 @@
 
     <!-- div socketNum added for testing -matti-->
     <div id='socketNum'></div>            
-    
+
     <div id='container'>
 
       <div id='panel'>
@@ -25,6 +25,9 @@
         <!-- need decrementer timer -->
         <p id='timer'><b>Time left: </b><span id='time'> </span></p>
 
+        <!-- User clickable button to claim a bingo -->
+        <p><button id='bingo' onclick='checkVictory();'>Bingo!</button></p>
+
         <!-- need js function to show and hide depending on user -->
         <div id='teacherOptions'>
           <h3>Extras in teacher view:</h3>
@@ -35,14 +38,14 @@
       </div>
       <div id='leaderDiv'>
         <table id='leaderBoard' >
-         <tr class='lbRow-id' >
+          <tr class='lbRow-id' >
             <td class='player1'>PLAYER 1</td>          
             <td class='player2'>PLAYER 2</td>          
             <td class='player3'>PLAYER 3</td>           
             <td class='player4'>PLAYER 4</td> 
             <td class='player5'>PLAYER 5</td>         
           </tr>
-           <tr class='lbRow-1' >
+          <tr class='lbRow-1' >
             <td class='lbCell-1'></td>          
             <td class='lbCell-2'></td>          
             <td class='lbCell-3'></td>           
@@ -95,92 +98,108 @@
 
     <script src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
-    
 
-     <script>
-       var prevClicked = [ ];
-       var clicked = false;
-       var prevAnswer;
-       var socket = io();
-       var idNum=0;
-       var numCorrect=0;
-     
-    socket.on('id', function(id){
-          if (idNum==0){ idNum = id};
 
-         if(!$('#socketNum').text()){
-             $('#socketNum').text(id);
-         };
+    <script>
+      var prevClicked = [ ];
+      var clicked = false; 
+      var prevAnswer;
+      var socket = io();
+      var idNum = 0;
+      var numCorrect = 0; // For tracking leaderboard
 
-       // When the server sends a randomized list of questions and answers, put
-       // them into the gameboard:
-       socket.on('randomBoard', function(msg) {
-           // After receiving the data from the server, put it into the gameboard
-           for (var i = 0; i < 5; i++) {
-               for (var j = 0; j < 5; j++) {
-                   $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
-               }
-           }
-       });
+      // User-stored representation of the board. Used for checking victory.
+      var boardArray = [ ];
+      // Initialize the board array with all 'false' values
+      for (var i = 0; i < 5; i++) {
+        boardArray[i] = [false, false, false, false, false];
+      }
 
-	   });
+      //document.getElementById('bingo').onclick = checkVictory();
 
- 
-     socket.on('newQuestion', function(msg) {
-       clicked = false;
+      socket.on('id', function(id){
+        if (idNum==0){ idNum = id};
 
-       // Check things
-       // console.log("prevClicked is:", prevClicked);
-       // console.log("prevAnswer is:", prevAnswer);
+        if(!$('#socketNum').text()){
+          $('#socketNum').text(id);
+        };
 
-       // Evaulate old question
-       if (prevClicked.length > 0) {
-         var temp = $('.row-' + prevClicked[0] + ' > .cell-' + prevClicked[1]);
-         // console.log("Printing temp.text:", temp.text());
-         if (temp.text() === prevAnswer) {
-           temp.css("background-color", "green");
-           numCorrect+=1;
-           socket.emit('idUpdate', idNum +':'+numCorrect);
-           } else {
-             temp.css("background-color", "white");
-           }
-       }
-       // Reset prevClicked
-       prevClicked = [ ];
+        // When the server sends a randomized list of questions and answers, put
+        // them into the gameboard:
+        socket.on('randomBoard', function(msg) {
+          // After receiving the data from the server, put it into the gameboard
+          for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+              $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
+            }
+          }
+        });
 
-       // Receive the new question from the server
-       // console.log(msg.answer);
-       prevAnswer = msg.answer;
-       // console.log(msg);
-       $('#question').text(msg.question);
-     });
+      });
 
-    
+      socket.on('userWon', function(msg) {
+        receivedVictory(msg);
+      });
 
-    
-     socket.on('idUpdate' , function(msg){
-        console.log("updating Id");
+      socket.on('newQuestion', function(msg) {
+        clicked = false;
+
+        // Check things
+        // console.log("prevClicked is:", prevClicked);
+        // console.log("prevAnswer is:", prevAnswer);
+
+        // Evaulate old question
+        if (prevClicked.length > 0) {
+          var temp = $('.row-' + prevClicked[0] + ' > .cell-' + prevClicked[1]);
+
+          // Are we correct?
+          if (temp.text() === prevAnswer) {
+            // Update background color
+            temp.css("background-color", "green");
+            // Update internal array of correct answers
+            boardArray[prevClicked[0]][prevClicked[1]] = true;
+
+            // Update the number of correct answers, and let the server know
+            numCorrect+=1;
+            socket.emit('idUpdate', idNum +':'+numCorrect);
+          } else {
+            temp.css("background-color", "white");
+          }
+        }
+        // Reset prevClicked
+        prevClicked = [ ];
+
+        // Receive the new question from the server
+        // console.log(msg.answer);
+        prevAnswer = msg.answer;
+        // console.log(msg);
+        $('#question').text(msg.question);
+      });
+
+
+
+
+      socket.on('idUpdate' , function(msg){
+        //console.log("updating Id");
         var id = msg.split(':')[0];
         var correct= msg.split(':')[1];
         console.log('ID #: '+id);
         var temp=$('.lbCell-'+id);
         temp.text(correct);
       });
-      
-     
-        
 
-     $('td').click(function(){                
-       // console.log(" clicked");
-       // console.log("id: " +idNum);
-       // console.log("correct: " + numCorrect);
+
+      $('td').click(function(){                
+        // console.log(" clicked");
+        // console.log("id: " +idNum);
+        // console.log("correct: " + numCorrect);
 
         if (!clicked) {
           clicked = true;
           var el = $(this);
           var cellNum = el.attr('class').split('-')[1];
           var rowNum = el.parent().attr('class').split('-')[1];
-          
+
           // Highlight the clicked box
           $('.row-' + rowNum + ' > .cell-' + cellNum).css("background-color", "yellow");
 
@@ -190,15 +209,89 @@
 
           // Debugging
           console.log(prevClicked);
+        }
+      });
+
+      function checkVictory() {
+        /* Checks if there is a row of 5, and if so, sends that information to
+        * the server.
+        * 
+        * Questions:
+        *   1.  If a user claims to have a bingo, but doesn't have one, 
+        *       should they be penalized?
+        *   2.  If a user doesn't notice that they have a bingo, should they
+        *       win on end of question anyway?
+        */
+
+        console.log("Checking whether not a user has a bingo!");
+        for (var i = 0; i < 5; i++)
+          console.log(boardArray[i], i + "th array");
+
+        // The existing global variable 'boardArray' is a 5x5 array of booleans
+        // representing correct answers. It will not have the most recent click
+        // represented, so have to check that now.
+        var temp = $('.row-' + prevClicked[0] + ' > .cell-' + prevClicked[1]);
+        if (temp.text() === prevAnswer) {
+          boardArray[prevClicked[0]][prevClicked[1]] = true;
+        }
+
+        var countRow = 0; 
+        var countCol = 0; 
+        // Check all rows and columns:
+        for (var i = 0; i < 5; i++) {
+          for (var j = 0; j < 5; j++) {
+            if (boardArray[i][j] === true) 
+              countCol++;
+            if (boardArray[j][i] === true)
+              countRow++;
+          }
+          // Victory condition:
+          if (countCol === 5 || countRow === 5)
+            sendVictory();
+
+          // Reset the count before checking the next column
+          countRow = 0;
+          countCol = 0;
+        }
+
+        // Check the diagonals:
+        var countDiag1 = 0;
+        var countDiag2 = 0;
+        for (var i = 0; i < 5; i++) {
+          if (boardArray[i][i] === true)
+            countDiag1++;
+          if (boardArray[4-i][i] === true)
+            countDiag2++;
+        }
+        if (countDiag1 === 5 || countDiag2 === 5)
+          sendVictory();
+
+        // For debugging, print out the array again...
+        for (var i = 0; i < 5; i++)
+          console.log(boardArray[i]);
       }
-     });
 
-     function onClick(i, j) {
-          prevClicked = $('.row-' + i + ' > .cell-' + j);
-          console.log(prevClicked);
-     }
+      function sendVictory() {
+        /* Sends a message to the server indicating that you have won the game
+         * Called by checkVictory()
+         */
+        console.log("sendVictory called.");
+        var win = {
+          id: idNum,
+          correct: numCorrect
+        };
+        socket.emit('claimVictory', win);
+      }
 
-    // Would like to have a method to auto-disconnect, but Chrome makes that harder
+      function receivedVictory(msg) {
+        /* When someone wins and lets the server know, the server will broadcast
+         * that information to everyone, calling this function. For now, just an
+         * alert box.
+         */
+        window.alert("Someone won the game!");
+      }
+
+      // Would like to have a method to auto-disconnect, but Chrome makes that harder
 
     </script>
   </body>

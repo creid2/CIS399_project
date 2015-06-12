@@ -26,6 +26,13 @@ io.on('connection', function(socket){
         io.emit('idUpdate', msg);
     });
 
+    socket.on('claimVictory', function(msg) {
+        console.log("User", msg.id, "won with", msg.correct, "points.");
+        io.emit('userWon', msg);
+        initGame('addition');
+        getAnswerGrid('addition', socket.id);
+    });
+
 });
 
 // Doesn't seem to work, but probably not a priority to figure out why.
@@ -39,7 +46,7 @@ io.on('disconnect', function(socket){
 
 app.use(express.static(__dirname+"/../client/"));
 
-http.listen(3002,function(){
+http.listen(3000,function(){ // TODO: Update before commit
     console.log('listening!');
 });
 
@@ -169,7 +176,7 @@ function nextQuestion() {
     // If there are remaining questions, serve up the next one
     if (questionsLeft.length > 0) {
         io.emit("newQuestion", questionsLeft[questionsLeft.length - 1]);
-        setTimeout(function(){nextQuestion()}, 7000);
+        setTimeout(function(){nextQuestion()}, 4000); // TODO: Tweak this number
     } else {
         // If we've run out of questions, start again
         console.log("Out of questions");
