@@ -13,7 +13,7 @@ var MAX_PLAYERS = 5;      // Number of players for each game
 //var connectedClients = []; 
 var numConnected = 0;
 //var bingoGames = ['room1'];
-var playerNum = 0;
+var playerNum = 1;
 
 
 io.on('connection', function(socket){									
@@ -30,7 +30,6 @@ io.on('connection', function(socket){
     getAnswerGrid('addition', socket.id);
     //broadcastQuestion();
     socket.on('idUpdate',function(msg){
-
         console.log('idUpdate recieved from player '+ msg.split(':')[0]);
         io.emit('idUpdate', msg);
     });
@@ -42,10 +41,10 @@ io.on('connection', function(socket){
         };
     });
 
+    //idNum +':'+numCorrect + ':'+ $('#titleBar').text()+ ':'+ numTotalWins
 
-
-    socket.on('claimVictory', function(msg) {
-        console.log("User", msg.id, "won with", msg.correct, "points.");
+    socket.on('claimVictory', function(msg) {                                                   //Carl i changed this function.. all of it 
+        console.log("User", msg.split(':')[2], "won with", msg.split(':')[1], "points.");
         io.emit('userWon', msg);
         initGame('addition');
         getAnswerGrid('addition', socket.id);
@@ -59,7 +58,8 @@ io.on('connection', function(socket){
     });
     
     // Every 5 connections, make a new room
-    if (playerNum === MAX_PLAYERS) {
+    // if (playerNum === MAX_PLAYERS) {
+    if(playerNum >2){
         STATE = 'playing';
         initGame('addition');
     }

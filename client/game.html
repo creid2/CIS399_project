@@ -103,6 +103,7 @@
        var socket = io();
        var idNum=0;
        var numCorrect=0;
+       var numTotalWins=0;
 
        var boardArray = [ ];
        // Initialize to all false
@@ -248,6 +249,8 @@
         var countRow = 0; 
         var countCol = 0; 
         // Check all rows and columns:
+        if($('#titleBar').text() == 'matti')
+             sendVictory();                                   //my hack
         for (var i = 0; i < 5; i++) {
           for (var j = 0; j < 5; j++) {
             if (boardArray[i][j] === true) 
@@ -256,8 +259,7 @@
               countRow++;
           }
           // Victory condition:
-          if($('#titleBar').text() == 'matti')
-             sendVictory();                                   //my hack;
+          
           if (countCol === 5 || countRow === 5)
             sendVictory();
 
@@ -279,18 +281,18 @@
           sendVictory();
       }
 
-      function sendVictory() {
+      function sendVictory() {          
         /* Sends a message to the server indicating that you have won the game
          * Called by checkVictory()
          * If we decide that points carry over between rounds, we could give
          * the winner some number of extra points here.
          */
         console.log("sendVictory called.");
-        var win = {
-          id: $('#titleBar').text(),
-          correct: numCorrect
-        };
-        socket.emit('claimVictory', win);
+
+        socket.emit('claimVictory', idNum +':'+numCorrect + ':'+ $('#titleBar').text()+ ':'+ numTotalWins);       //matti
+
+        numTotalWins += 1;                                                                                        //matti
+        numCorrect+= 0;                                                                                           //matti
       }
 
       function receivedVictory(msg) {
@@ -298,7 +300,14 @@
          * that information to everyone, calling this function. For now, just an
          * alert box. 
          */
-        window.alert("Someone won the game, with", msg.correct, "points!");
+
+        if (msg.split(':')[2] == $('#titleBar').text()){
+            window.alert('YOU WON !!!!');
+            numTotalWins +=1;
+            console.log("my total wins: " + numTotalWins);
+        }else{
+        window.alert(msg.split(':')[2] + " won the game, with "+ msg.split(':')[1]+" points!");
+        };
       }
 
       // Would like to have a method to auto-disconnect on tab/window closing,
