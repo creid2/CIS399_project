@@ -1,3 +1,7 @@
+body {
+	background-color: #FFCE4C;
+}
+
 #logincontainer {
 	border: 2px solid;
 	width: 300px;
@@ -5,6 +9,7 @@
 	margin-left: auto;
 	margin-right:auto;
 	margin-top:30px;
+	background-color: #4F5AC7;
 }
 
 #loginBox {
