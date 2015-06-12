@@ -295,7 +295,9 @@
          * that information to everyone, calling this function. For now, just an
          * alert box. 
          */
-        window.alert("Someone won the game, with", msg.correct, "points!");
+        window.alert("Someone won the game, with " + msg.correct + " points!");
+        var resetInfo = { }; // in case we want to emit information here
+        socket.emit('reset'
       }
 
       // Would like to have a method to auto-disconnect on tab/window closing,
