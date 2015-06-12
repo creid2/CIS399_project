@@ -1,20 +1,29 @@
 var express = require('express');
 var app = express();
 var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var io = require('socket.io')(http, { pingTimeout: 60000}); // ping timeout doens't work?
 var mongoose = require('mongoose'); // May need to change this
 
+// Regular global variables:
 var questionsLeft = []; // Keeps track of questions in the set
+var STATE = 'paused';
+var QUESTION_TIME = 5000; // Delay in milliseconds between questions
+var MAX_PLAYERS = 5;      // Number of players for each game
 
-var connectedClients = []; 
- playerNum =1;
+//var connectedClients = []; 
+var numConnected = 0;
+//var bingoGames = ['room1'];
+var playerNum = 0;
 
 
 io.on('connection', function(socket){									
+    numConnected++;
+    console.log(numConnected, "players connected");
+
     //io.emit('id', socket.id);
+    playerNum += 1;
     io.emit('id', playerNum);
-    playerNum+=1;
-    connectedClients.push(socket.id);
+    //connectedClients.push(socket.id);
     console.log('client connected with socket id', socket.id);
 
     // Send some random questions over to the client that just connected
@@ -33,14 +42,32 @@ io.on('connection', function(socket){
         getAnswerGrid('addition', socket.id);
     });
 
+    // Doesn't seem to work, but probably not a priority to figure out why.
+    io.on('disconnect', function(socket){
+        console.log("A socket disconnected");
+        numConnected--;
+        playerNum = 0;
+    });
+    
+    // Every 5 connections, make a new room
+    if (playerNum === MAX_PLAYERS) {
+        STATE = 'playing';
+        initGame('addition');
+    }
+    /*
+    if ( (numConnected % MAX_PLAYERS) / MAX_PLAYERS >= 1) {
+        // Create another room
+        var roomName = "room" + bingoGames.length.toString();
+        console.log("creating", roomName);
+        bingoGames.push(roomName);
+        playerNum = 0;
+    } 
+    // Now join the room
+    socket.join(bingoGames[bingoGames.length]);
+    */
+        
 });
 
-// Doesn't seem to work, but probably not a priority to figure out why.
-io.on('disconnect', function(socket){
-    console.log("client id", socket.id, "disconnected");
-    var i = connectedClients.indexOf(socket.id);
-    connectedClients.splice(i, 1); // remove the specified socket id
-});
 
 
 
@@ -60,7 +87,6 @@ mongoose.connection.on('connected', function() {
     console.log("Connected to Mongoose.");
     console.log("Adding a random math question...");
     randomQuestion();
-    initGame('addition');
 });
 
 mongoose.connection.on('error',function (err) {
@@ -152,7 +178,6 @@ function getAnswerGrid(qSet, socket) {
             io.to(socket).emit("randomBoard", res);
         }
     });
-    //console.log("Logging variable 'ans':\n", ans);
 }
 
 function initGame(qSet) {
@@ -174,14 +199,28 @@ function nextQuestion() {
     questionsLeft.pop();
 
     // If there are remaining questions, serve up the next one
-    if (questionsLeft.length > 0) {
+    if (questionsLeft.length > 0 && STATE === 'playing') {
         io.emit("newQuestion", questionsLeft[questionsLeft.length - 1]);
-        setTimeout(function(){nextQuestion()}, 4000); // TODO: Tweak this number
+        setTimeout(function(){nextQuestion()}, QUESTION_TIME); 
     } else {
         // If we've run out of questions, start again
         console.log("Out of questions");
         initGame('addition'); 
 
     }
+}
+
+function resetGame(qSet) {
+    /* Resets the gameboard for all clients in the room, and refreshes the 
+     * question set.
+     */
+    console.log("Resetting game");
+    STATE = 'paused';
+    initGame(qSet); // Reset the questions
+    //randomBoard(
+    // Now serve a new gameboard to all of the connected clients:
+    //for (var i = 0; i < numConnected; i++) {
+        // client[i].id.emit(new game);
+    //}
 }
 

@@ -115,8 +115,6 @@
         boardArray[i] = [false, false, false, false, false];
       }
 
-      //document.getElementById('bingo').onclick = checkVictory();
-
       socket.on('id', function(id){
         if (idNum==0){ idNum = id};
 
@@ -127,9 +125,18 @@
         // When the server sends a randomized list of questions and answers, put
         // them into the gameboard:
         socket.on('randomBoard', function(msg) {
+          // Reset various state variables:
+          numCorrect = 0; // Consider whether this one should carry over
+          boardArray = [ ];
+          for (var i = 0; i < 5; i++) 
+            boardArray[i] = [false, false, false, false, false];
+          clicked = false;
+          prevClicked = [ ];
+          
           // After receiving the data from the server, put it into the gameboard
           for (var i = 0; i < 5; i++) {
             for (var j = 0; j < 5; j++) {
+              $('.row-' + i + ' > .cell-' + j).css("background-color", "white");
               $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
             }
           }
@@ -143,10 +150,6 @@
 
       socket.on('newQuestion', function(msg) {
         clicked = false;
-
-        // Check things
-        // console.log("prevClicked is:", prevClicked);
-        // console.log("prevAnswer is:", prevAnswer);
 
         // Evaulate old question
         if (prevClicked.length > 0) {
@@ -170,9 +173,7 @@
         prevClicked = [ ];
 
         // Receive the new question from the server
-        // console.log(msg.answer);
         prevAnswer = msg.answer;
-        // console.log(msg);
         $('#question').text(msg.question);
       });
 
@@ -190,15 +191,12 @@
 
 
       $('td').click(function(){                
-        // console.log(" clicked");
-        // console.log("id: " +idNum);
-        // console.log("correct: " + numCorrect);
+        var el = $(this);
+        var cellNum = el.attr('class').split('-')[1];
+        var rowNum = el.parent().attr('class').split('-')[1];
 
-        if (!clicked) {
+        if (!clicked && !boardArray[rowNum][cellNum]) {
           clicked = true;
-          var el = $(this);
-          var cellNum = el.attr('class').split('-')[1];
-          var rowNum = el.parent().attr('class').split('-')[1];
 
           // Highlight the clicked box
           $('.row-' + rowNum + ' > .cell-' + cellNum).css("background-color", "yellow");
@@ -222,10 +220,6 @@
         *   2.  If a user doesn't notice that they have a bingo, should they
         *       win on end of question anyway?
         */
-
-        console.log("Checking whether not a user has a bingo!");
-        for (var i = 0; i < 5; i++)
-          console.log(boardArray[i], i + "th array");
 
         // The existing global variable 'boardArray' is a 5x5 array of booleans
         // representing correct answers. It will not have the most recent click
@@ -265,15 +259,13 @@
         }
         if (countDiag1 === 5 || countDiag2 === 5)
           sendVictory();
-
-        // For debugging, print out the array again...
-        for (var i = 0; i < 5; i++)
-          console.log(boardArray[i]);
       }
 
       function sendVictory() {
         /* Sends a message to the server indicating that you have won the game
          * Called by checkVictory()
+         * If we decide that points carry over between rounds, we could give
+         * the winner some number of extra points here.
          */
         console.log("sendVictory called.");
         var win = {
@@ -286,12 +278,13 @@
       function receivedVictory(msg) {
         /* When someone wins and lets the server know, the server will broadcast
          * that information to everyone, calling this function. For now, just an
-         * alert box.
+         * alert box. 
          */
-        window.alert("Someone won the game!");
+        window.alert("Someone won the game, with", msg.correct, "points!");
       }
 
-      // Would like to have a method to auto-disconnect, but Chrome makes that harder
+      // Would like to have a method to auto-disconnect on tab/window closing,
+      // but can't figure it out. Chrome makes it a privacy feature, I think.
 
     </script>
   </body>
