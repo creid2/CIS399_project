@@ -220,7 +220,6 @@ function nextQuestion() {
         // If we've run out of questions, start again
         console.log("Out of questions");
         initGame('addition'); 
-
     }
 }
 
