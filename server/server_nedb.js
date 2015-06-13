@@ -71,9 +71,15 @@ io.on('connection', function(socket){
 
 app.use(express.static(__dirname+"/../client/"));
 
-http.listen(3000,function(){ // TODO: Update before commit
-    console.log('listening!');
-});
+try {
+	http.listen(7890, function(err) { 
+		console.log('listening!');
+		console.log(err);
+	});
+} catch (e) {
+	console.log("Error:");
+	console.log(e);
+}
 
 // We don't use mongoose, but this schema is useful for seeing how the databse
 // is laid out:
