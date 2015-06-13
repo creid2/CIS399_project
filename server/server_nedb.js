@@ -71,7 +71,7 @@ io.on('connection', function(socket){
 
 app.use(express.static(__dirname+"/../client/"));
 
-http.listen(7890, function(err) { 
+http.listen(3143, function(err) { 
 	console.log('listening! err=', err);
 });
 
