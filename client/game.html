@@ -147,7 +147,7 @@
            // After receiving the data from the server, put it into the gameboard
            for (var i = 0; i < 5; i++) {
                for (var j = 0; j < 5; j++) {
-                   $('.row-' + i + ' > .cell-' + j).css("background-color", "white");
+                   $('.row-' + i + ' > .cell-' + j).css("background-color", "#4F5AC7");
                    $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
                }
            }
@@ -190,7 +190,7 @@
             numCorrect+=1;
             socket.emit('idUpdate', idNum +':'+numCorrect + ':'+ $('#titleBar').text());
           } else {
-            temp.css("background-color", "white");
+            temp.css("background-color", "#4F5AC7");
           }
         }
         // Reset prevClicked
