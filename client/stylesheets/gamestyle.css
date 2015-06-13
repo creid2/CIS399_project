@@ -72,4 +72,9 @@ h3 {
 	background-color: #65E244; 
 	margin-right: 80px;
 	color: #E0E2E1;
+    width: 450px;
+}
+
+#leaderBoard {
+    width: 450px;
 }

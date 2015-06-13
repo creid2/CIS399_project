@@ -15,19 +15,21 @@
         <h3>Question:</h3> 
 
         <!-- need random question generator -->
-        <p id='question'>What is the capital of Oregon?<br> </p>
+        <p id='question'>What is the answer to my  question?</p>
         <br><br>
         <!-- need decrementer timer -->
-        <p id='timer'><b>Time left: </b><span id='time'> </span></p>
+        <p id='timer'><b>Claim a Bingo</b><span id='time'> </span></p>
 
         <!-- User clickable button to claim a bingo -->
         <p><button id='bingo' onclick='checkVictory();'>Bingo!</button></p>
 
         <!-- need js function to show and hide depending on user -->
         <div id='teacherOptions'>
-          <h3>Extras in teacher view:</h3>
-          <button>Abort the game</button><br>
+          <h3>Extra Buttons</h3>
+          <button id='resetButton' onclick='resetGame();'>Reset the game</button><br>
+          <!-- This button was not implemented
           <button id='startTimer'>Start</button><br>
+          -->
         </div> 
 
       </div>
@@ -101,64 +103,57 @@
     <script src="https://code.jquery.com/jquery-2.0.3.min.js"></script>
     <script src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
 
-     <script>
-       var prevClicked = [ ];
-       var clicked = false;
-       var prevAnswer;
-       var socket = io();
-       var idNum=0;
-       var numCorrect=0;
-       var numTotalWins=0;
+    <script>
+      var prevClicked = [ ];
+      var clicked = false;
+      var prevAnswer;
+      var socket = io();
+      var idNum=0;
+      var numCorrect=0;
+      var numTotalWins=0;
 
-       var boardArray = [ ];
-       // Initialize to all false
-       for (var i = 0; i < 5; i++) {
+      var boardArray = [ ];
+      // Initialize to all false
+      for (var i = 0; i < 5; i++) {
         boardArray[i] = [false, false, false, false, false];
-       }
+      }
 
-    function readCookie() {
-      console.log('reading cookie');
-      var name = "username" + "=";
-      var ca = document.cookie.split(';');
-      console.log(ca);
-      for(var i=0; i<ca.length; i++) {
-        var c = ca[i];
-      };  
-        
-      $('#titleBar').text(c.split('=')[1]);
-        
-      // while (c.charAt(0)==' ') c = c.substring(1);
-      // if (c.indexOf(name) == 0) {
-      //   console.log( c.substring(name.length,c.length));
-      // }
-    };
+      function readCookie() {
+        console.log('reading cookie');
+        var name = "username" + "=";
+        var ca = document.cookie.split(';');
+        console.log(ca);
+        for(var i=0; i<ca.length; i++) {
+          var c = ca[i];
+        };  
 
-     
-    socket.on('id', function(id){
+        $('#titleBar').text(c.split('=')[1]);
+      };
 
+
+      socket.on('id', function(id){
         if(!$('#titleBar').text()){
           readCookie();
         };
-        
 
-       // When the server sends a randomized list of questions and answers, put
-       // them into the gameboard:
-       socket.on('randomBoard', function(msg) {
-           // After receiving the data from the server, put it into the gameboard
-           for (var i = 0; i < 5; i++) {
-               for (var j = 0; j < 5; j++) {
-                   $('.row-' + i + ' > .cell-' + j).css("background-color", "#4F5AC7");
-                   $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
-               }
-           }
-       });
+        // When the server sends a randomized list of questions and answers, put
+        // them into the gameboard:
+        socket.on('randomBoard', function(msg) {
+          // After receiving the data from the server, put it into the gameboard
+          for (var i = 0; i < 5; i++) {
+            for (var j = 0; j < 5; j++) {
+              $('.row-' + i + ' > .cell-' + j).css("background-color", "#4F5AC7");
+              $('.row-' + i + ' > .cell-' + j).text(msg[i*5 + j].answer);
+            }
+          }
+        });
 
-	   });
+      });
 
 
-    socket.emit('inGame',idNum);
+      socket.emit('inGame',idNum);
 
-    socket.on('inGame',function(msg){
+      socket.on('inGame',function(msg){
         if (idNum==0){ 
           idNum = msg;
         };
@@ -166,7 +161,7 @@
           $('#socketNum').text(idNum);
         };
         $('.player'+idNum) .text($('#titleBar').text());
-    });
+      });
 
       socket.on('userWon', function(msg) {
         receivedVictory(msg);
@@ -214,6 +209,16 @@
         temp.text(username);
       });
 
+      socket.on('resetScores', function(msg) {
+        // Reset all the scores to 0 for the current game.
+        for (var i = 1; i < 6; i++) {
+          $('.lbCell-' + i).text("0");
+        }
+
+        // Also reset the current bingo board
+        socket.emit('getNewBoard', { }); 
+      });
+
       $('td').click(function(){                
         var el = $(this);
         var cellNum = el.attr('class').split('-')[1];
@@ -257,18 +262,18 @@
         var countCol = 0; 
         // Check all rows and columns:
         if($('#titleBar').text() == 'matti')
-             sendVictory();                                   //my hack
+        sendVictory();                                   //my hack
         for (var i = 0; i < 5; i++) {
           for (var j = 0; j < 5; j++) {
             if (boardArray[i][j] === true) 
-              countCol++;
+            countCol++;
             if (boardArray[j][i] === true)
-              countRow++;
+            countRow++;
           }
           // Victory condition:
-          
+
           if (countCol === 5 || countRow === 5)
-            sendVictory();
+          sendVictory();
 
           // Reset the count before checking the next column
           countRow = 0;
@@ -280,12 +285,12 @@
         var countDiag2 = 0;
         for (var i = 0; i < 5; i++) {
           if (boardArray[i][i] === true)
-            countDiag1++;
+          countDiag1++;
           if (boardArray[4-i][i] === true)
-            countDiag2++;
+          countDiag2++;
         }
         if (countDiag1 === 5 || countDiag2 === 5)
-          sendVictory();
+        sendVictory();
       }
 
       function sendVictory() {          
@@ -298,7 +303,6 @@
         numTotalWins += 1;
         socket.emit('claimVictory', idNum +':'+numCorrect + ':'+ $('#titleBar').text()+ ':'+ numTotalWins);       //matti
 
-
       }
 
       function receivedVictory(msg) {
@@ -308,26 +312,32 @@
          */
 
         if (msg.split(':')[2] == $('#titleBar').text()){
-            window.alert('YOU WON !!!!');
-            numTotalWins +=1;
-            console.log("my total wins: " + numTotalWins);
-            
+          window.alert('YOU WON !!!!');
+          numTotalWins +=1;
+          console.log("my total wins: " + numTotalWins);
+
         }else{
-        window.alert(msg.split(':')[2] + " won the game, with "+ msg.split(':')[1]+" points!");
+          window.alert(msg.split(':')[2] + " won the game, with "+ msg.split(':')[1]+" points!");
         };
         var id = msg.split(':')[0];
         var temp=$('.wins'+id);
         console.log("numwins: "+msg.split(':')[3]);
         temp.text(msg.split(':')[3]);
         numCorrect = 0;
-        
+
         var resetInfo = { }; // in case we want to emit information here
         socket.emit('reset', resetInfo);
       }
 
+      function resetGame() {
+        /* Sends a message to the server to reset the game
+         * Called by the reset game button
+         */
+        socket.emit('reset', { });
+      }
+
       // Would like to have a method to auto-disconnect on tab/window closing,
       // but can't figure it out. Chrome makes it a privacy feature, I think.
-
     </script>
   </body>
 </html>
