@@ -6,17 +6,19 @@ var io = require('socket.io')(http, { pingTimeout: 60000}); // ping timeout doen
 // Using nedb so we can put this on ix--the mongo instructions didn't work for me
 var Datastore = require('nedb'),
     db = new Datastore({filename: './questions_nedb', autoload:true});
-var port = process.env.PORT || 3000; 
+
+// This didn't work, we wound up randomly guessing a port
+//var port = process.env.PORT || 3000; 
 db.loadDatabase();
 
 // Regular global variables:
 var questionsLeft = []; // Keeps track of questions in the set
-var STATE = 'paused';   // Not actually used
 var QUESTION_TIME = 5000; // Delay in milliseconds between questions
 var MAX_PLAYERS = 5;      // Number of players for each game
-
+//var playing = false;
 var numConnected = 0;
 var playerNum = 1;
+var questionTimer;
 
 
 io.on('connection', function(socket){									
@@ -45,6 +47,7 @@ io.on('connection', function(socket){
         io.emit('userWon', msg);
         initGame('addition');
         getAnswerGrid('addition', socket.id);
+        //playing = false;
     });
 
     // Doesn't seem to work, but not a priority to figure out why.
@@ -54,15 +57,19 @@ io.on('connection', function(socket){
         playerNum = 0;
     });
     
-    // Every 5 connections, make a new room
+    // UNUSED: Every 5 connections, make a new room
     if (playerNum === MAX_PLAYERS) {
-        STATE = 'playing';
         initGame('addition');
     }
 
     socket.on("reset", function(msg) {
         // No message is currently being passed, but might want to have one
         // someday
+        getAnswerGrid('addition', socket.id);
+        resetGame('addition');
+    });
+
+    socket.on('getNewBoard', function(msg) {
         getAnswerGrid('addition', socket.id);
     });
 });
@@ -71,7 +78,8 @@ io.on('connection', function(socket){
 
 app.use(express.static(__dirname+"/../client/"));
 
-http.listen(7890, function(err) { 
+// On ix, we guessed port 7890 which works. On localhost, 3000 works.
+http.listen(3000, function(err) {  
 	console.log('listening! err=', err);
 });
 
@@ -154,6 +162,10 @@ function getAnswerGrid(qSet, socket) {
 
 function initGame(qSet) {
     console.log("new Game");
+    questionsLeft = [ ];
+    clearTimeout(questionTimer); // Stop any existing newQuestion loop
+
+    // Look at all questions in the database
     db.find({q_set:qSet}, function(err, res) {
         if (err) {
             console.log("Error in initGame:", err);
@@ -162,18 +174,20 @@ function initGame(qSet) {
             // Randomly shuffle the array
             for(var j, x, i = res.length; i; j = parseInt(Math.random() * i), x = res[--i], res[i] = res[j], res[j] = x);
             questionsLeft = res;
+            console.log("Assigned new questions");
             nextQuestion();
         }
     });
+    console.log("initGame called");
 }
 
 function nextQuestion() {
     questionsLeft.pop();
 
     // If there are remaining questions, serve up the next one
-    if (questionsLeft.length > 0 && STATE === 'playing') {
+    if (questionsLeft.length > 0) {
         io.emit("newQuestion", questionsLeft[questionsLeft.length - 1]);
-        setTimeout(function(){nextQuestion()}, QUESTION_TIME); 
+        questionTimer = setTimeout(function(){nextQuestion()}, QUESTION_TIME); 
     } else {
         // If we've run out of questions, start again
         console.log("Out of questions");
@@ -185,9 +199,11 @@ function resetGame(qSet) {
     /* Resets the gameboard for all clients in the room, and refreshes the 
      * question set.
      */
+    clearTimeout(questionTimer); // Stop any existing newQuestion loop
+    //if (playing)
     console.log("Resetting game");
-    STATE = 'paused';
-    questionsLeft = [];  // Reset questions left
-    initGame(qSet);      // Fill out the question set again
+    //questionsLeft = [];  // Reset questions left
+    io.emit('resetScores', { }); // Sets scores to zero
+    initGame('addition');      // Fill out the question set again
 }
 
