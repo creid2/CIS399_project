@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var http = require('http').Server(app);
+var http = require('http').Server(app); 
 var io = require('socket.io')(http, { pingTimeout: 60000}); // ping timeout doens't work?
 
 // Using nedb so we can put this on ix--the mongo instructions didn't work for me
@@ -71,15 +71,9 @@ io.on('connection', function(socket){
 
 app.use(express.static(__dirname+"/../client/"));
 
-try {
-	http.listen(7890, function(err) { 
-		console.log('listening!');
-		console.log(err);
-	});
-} catch (e) {
-	console.log("Error:");
-	console.log(e);
-}
+http.listen(7890, function(err) { 
+	console.log('listening! err=', err);
+});
 
 // We don't use mongoose, but this schema is useful for seeing how the databse
 // is laid out:
